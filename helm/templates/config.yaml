@@ -3,4 +3,4 @@ kind: ConfigMap
 metadata:
   name: {{ .Release.Name }}
 data:
-  TEST: OKAY
+  DB_HOST: {{ .Release.Name }}-postgres
