@@ -7,6 +7,7 @@ import (
 	"net/http"
 )
 
+//Page is an abstraction from a tutorial
 type Page struct {
 	Title string
 	Body  []byte
@@ -57,6 +58,9 @@ func pageHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	log.Print(DB)
+	log.Print("\n")
+
 	http.HandleFunc("/save/", pageSaveHandler)
 	http.HandleFunc("/view/", pageHandler)
 	http.HandleFunc("/", handler)
