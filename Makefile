@@ -1,5 +1,5 @@
-marvin: *.go
-	go build .
+marvin: src
+	go build -o marvin ./src
 
 .PHONY: serve
 serve: marvin
