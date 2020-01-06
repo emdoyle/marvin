@@ -1,5 +1,8 @@
-marvin: src
+marvin: src/** assets/build/**
 	go build -o marvin ./src
+
+assets/build/**: assets/src/**
+	cd assets/ && yarn build
 
 .PHONY: serve
 serve: marvin
@@ -8,3 +11,4 @@ serve: marvin
 .PHONY: clean
 clean:
 	rm marvin
+	rm -r assets/build/
