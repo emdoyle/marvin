@@ -49,6 +49,7 @@ var DB, err = getDB()
 
 func init() {
 	if err != nil {
-		log.Fatalf("Could not connect to DB\nError: %s", err)
+		//Don't need to os.exit if DB is not available
+		log.Printf("Could not connect to DB\nError: %s", err)
 	}
 }
