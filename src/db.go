@@ -3,26 +3,18 @@ package main
 import (
 	"fmt"
 	"log"
-	"os"
 
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 )
 
-func getEnv(key, def string) string {
-	if value, ok := os.LookupEnv(key); ok {
-		return value
-	}
-	return def
-}
-
 func getDB() (*gorm.DB, error) {
-	dbHost := getEnv("DB_HOST", "localhost")
-	dbPassword := getEnv("DB_PASSWORD", "none")
-	dbPort := getEnv("DB_PORT", "5432")
-	dbUser := getEnv("DB_USER", "postgres")
-	dbName := getEnv("DB_NAME", "marvin")
-	dbSslMode := getEnv("DB_SSL_MODE", "disable")
+	dbHost := GetEnv("DB_HOST", "localhost")
+	dbPassword := GetEnv("DB_PASSWORD", "none")
+	dbPort := GetEnv("DB_PORT", "5432")
+	dbUser := GetEnv("DB_USER", "postgres")
+	dbName := GetEnv("DB_NAME", "marvin")
+	dbSslMode := GetEnv("DB_SSL_MODE", "disable")
 
 	configuration := fmt.Sprintf(
 		"host=%s port=%s user=%s dbname=%s password=%s sslmode=%s",
