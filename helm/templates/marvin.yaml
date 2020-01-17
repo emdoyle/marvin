@@ -19,6 +19,12 @@ spec:
       containers:
       - name: marvinserver
         image: emdoyle/marvin:latest
+        env:
+          - name: SLACK_SIGNING_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: marvinsecrets
+                key: slackSigningSecret
         envFrom:
         - configMapRef:
             name: {{ .Release.Name }}

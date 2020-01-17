@@ -2,3 +2,4 @@
 marvin
 **/node_modules/**
 **/build/**
+secrets.yaml
