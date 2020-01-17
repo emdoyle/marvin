@@ -12,3 +12,21 @@ serve: marvin
 clean:
 	rm marvin
 	rm -r assets/build/
+
+.PHONY: build
+build: marvin
+	docker build . -t marvin:latest
+
+.PHONY: tag
+tag:
+	docker tag marvin:latest emdoyle/marvin:latest
+
+.PHONY: push
+push:
+	docker push emdoyle/marvin:latest
+
+.PHONY: image
+image:
+	make build
+	make tag
+	make push
