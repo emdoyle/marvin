@@ -49,8 +49,7 @@ func handleChallenge(eventWrapper EventWrapper, writer http.ResponseWriter) {
 	json.NewEncoder(writer).Encode(response)
 }
 
-func verifySlackSignature(request *http.Request) bool {
-	rawBody, _ := ioutil.ReadAll(request.Body)
+func verifySlackSignature(rawBody []byte, request *http.Request) bool {
 	timestamp := request.Header.Get("X-Slack-Request-Timestamp")
 	slackSignature := []byte(request.Header.Get("X-Slack-Signature"))
 	return VerifySigningSignature(timestamp, rawBody, slackSignature)
@@ -58,12 +57,13 @@ func verifySlackSignature(request *http.Request) bool {
 
 //EventHandler handles Slack's events
 func EventHandler(w http.ResponseWriter, r *http.Request) {
-	if verified := verifySlackSignature(r); !verified {
+	rawBody, _ := ioutil.ReadAll(r.Body)
+	if verified := verifySlackSignature(rawBody, r); !verified {
 		declineResponse(w)
 		return
 	}
 	var eventWrapper EventWrapper
-	json.NewDecoder(r.Body).Decode(&eventWrapper)
+	json.Unmarshal(rawBody, &eventWrapper)
 
 	if eventWrapper.Type == "url_verification" {
 		handleChallenge(eventWrapper, w)
