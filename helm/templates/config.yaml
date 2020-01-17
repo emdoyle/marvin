@@ -4,4 +4,3 @@ metadata:
   name: {{ .Release.Name }}
 data:
   DB_HOST: {{ .Release.Name }}-postgres
-  DB_SSL_MODE: enable
