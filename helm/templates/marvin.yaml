@@ -25,6 +25,11 @@ spec:
               secretKeyRef:
                 name: marvinsecrets
                 key: slackSigningSecret
+          - name: SLACKBOT_OAUTH_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: marvinsecrets
+                key: slackBotOAuthToken
         envFrom:
         - configMapRef:
             name: {{ .Release.Name }}

@@ -21,9 +21,12 @@ type EventWrapper struct {
 
 //Event is the JSON structure of a single event
 type Event struct {
-	Type      string `json:"type"`
-	Timestamp string `json:"event_ts"`
-	User      string `json:"user"`
+	Type        string `json:"type"`
+	Timestamp   string `json:"event_ts"`
+	User        string `json:"user"`
+	Channel     string `json:"channel"`
+	ChannelType string `json:"channel_type"`
+	Text        string `json:"text"`
 }
 
 //ChallengeResponse is the response we send back for a challenge event
@@ -33,6 +36,7 @@ type ChallengeResponse struct {
 
 func setUpJSONResponse(writer http.ResponseWriter) {
 	writer.WriteHeader(http.StatusOK)
+	writer.Header().Set("Accept-Charset", "utf-8")
 	writer.Header().Set("Content-Type", "application/json")
 }
 
@@ -55,6 +59,13 @@ func verifySlackSignature(rawBody []byte, request *http.Request) bool {
 	return VerifySigningSignature(timestamp, rawBody, slackSignature)
 }
 
+func handleEvent(event Event) {
+	switch event.Type {
+	case "message":
+		HandleMessage(event)
+	}
+}
+
 //EventHandler handles Slack's events
 func EventHandler(w http.ResponseWriter, r *http.Request) {
 	rawBody, _ := ioutil.ReadAll(r.Body)
@@ -65,7 +76,10 @@ func EventHandler(w http.ResponseWriter, r *http.Request) {
 	var eventWrapper EventWrapper
 	json.Unmarshal(rawBody, &eventWrapper)
 
-	if eventWrapper.Type == "url_verification" {
+	switch eventWrapper.Type {
+	case "url_verification":
 		handleChallenge(eventWrapper, w)
+	case "event_callback":
+		handleEvent(eventWrapper.Event)
 	}
 }
