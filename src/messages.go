@@ -58,3 +58,13 @@ func POSTToSlack(message *Message) {
 func HandleMessage(event Event) {
 	log.Printf("Received message text: %s", event.Text)
 }
+
+//HandleMention handles an 'app_mention' type Event
+func HandleMention(event Event) {
+	log.Printf("Received mention text: %s", event.Text)
+	message := &Message{
+		Channel: event.Channel,
+		Text:    "Don't bother me.",
+	}
+	POSTToSlack(message)
+}

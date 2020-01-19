@@ -63,6 +63,8 @@ func handleEvent(event Event) {
 	switch event.Type {
 	case "message":
 		HandleMessage(event)
+	case "app_mention":
+		HandleMention(event)
 	}
 }
 
