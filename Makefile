@@ -1,4 +1,6 @@
-marvin: src/** assets/build/**
+all: marvin assets/build/**
+
+marvin: src/**
 	go build -o marvin ./src
 
 assets/build/**: assets/src/**

@@ -10,7 +10,7 @@ ReactDOM.render(<App />, document.getElementById('root'));
 if (module.hot) {
     module.hot.accept("./App.js", () => {
         const nextApp = require("./App").default;
-        ReactDOM.render(nextApp, document.getElementById('root'));
+        ReactDOM.render(nextApp(), document.getElementById('root'));
     })
 }
 
