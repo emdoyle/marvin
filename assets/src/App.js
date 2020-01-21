@@ -4,6 +4,8 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import AndroidIcon from '@material-ui/icons/Android';
+import logo from 'images/logo512.png';
+import 'css/App.css';
 
 const useStyles = makeStyles(theme => ({
   menuIconPadRight: {
@@ -21,6 +23,9 @@ function App() {
           <Typography>MARVIN</Typography>
         </Toolbar>
       </AppBar>
+      <div className="App-main">
+        <img src={logo} className="App-logo" alt="logo" />
+      </div>
     </div>
   );
 }

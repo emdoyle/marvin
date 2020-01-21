@@ -1,10 +1,11 @@
-all: marvin assets/build/**
+all: marvin assets/build/.made
 
 marvin: src/**
 	go build -o marvin ./src
 
-assets/build/**: assets/src/**
+assets/build/.made: assets/src/**
 	cd assets/ && yarn build
+	touch assets/build/.made
 
 .PHONY: serve
 serve: marvin
