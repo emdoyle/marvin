@@ -2,8 +2,9 @@ FROM golang:1.13 AS builder
 WORKDIR /marvin
 COPY go.mod .
 COPY go.sum .
-COPY src/ .
-RUN CGO_ENABLED=0 GOOS=linux go build -a -o marvin .
+RUN mkdir src
+COPY src/ ./src/
+RUN CGO_ENABLED=0 GOOS=linux go build -a -o marvin ./src
 
 # TODO: trust .dockerignore and copy less explicitly
 FROM node:13.5-alpine AS frontend-builder

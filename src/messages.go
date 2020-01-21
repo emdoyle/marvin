@@ -57,6 +57,11 @@ func POSTToSlack(message *Message) {
 //HandleMessage handles a 'message' type Event
 func HandleMessage(event Event) {
 	log.Printf("Received message text: %s", event.Text)
+	switch event.ChannelType {
+	case "im":
+		log.Print("Handling API request in IM")
+		HandleUserAPIRequest(event)
+	}
 }
 
 //HandleMention handles an 'app_mention' type Event
