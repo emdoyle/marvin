@@ -33,7 +33,7 @@ func POSTToSlack(message *Message) {
 	payload, _ := json.Marshal(message)
 	log.Printf("%s", payload)
 	request, err := http.NewRequest(
-		"POST", "https://slack.com/api/chat.postMessage", bytes.NewBuffer(payload),
+		"POST", SlackChatPostMessageURL, bytes.NewBuffer(payload),
 	)
 	if err != nil {
 		log.Printf("Error creating POST request: %s", err)
