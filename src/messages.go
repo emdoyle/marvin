@@ -11,13 +11,15 @@ import (
 
 //Message is a message payload
 type Message struct {
-	Channel string `json:"channel"`
-	Text    string `json:"text"`
+	Channel  string  `json:"channel"`
+	Text     string  `json:"text"`
+	Blocks   []Block `json:"blocks"`
+	ThreadTs string  `json:"thread_ts"`
+	Markdown bool    `json:"mrkdwn"`
 }
 
 func setJSONResponse(request *http.Request) {
-	request.Header.Set("Accept-Charset", "utf-8")
-	request.Header.Set("Content-Type", "application/json")
+	request.Header.Set("Content-Type", "application/json; charset=utf-8")
 }
 
 func addAuthToken(request *http.Request) {

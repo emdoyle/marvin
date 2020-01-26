@@ -49,6 +49,10 @@ func UpdateUser(user *domain.UserResource, userDAO UserDAO) bool {
 
 //HandleUserAPIRequest handles an incoming API request related to UserResources
 func HandleUserAPIRequest(event Event) {
+	if DB == nil {
+		log.Printf("Cannot handle API request when DB is nil")
+		return
+	}
 	dao := models.GORMUserDAO{DB: DB}
 	if strings.Contains(event.Text, "remember me") {
 		log.Printf("Request received to remember user: %s", event.User)

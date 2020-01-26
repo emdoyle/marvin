@@ -36,8 +36,7 @@ type ChallengeResponse struct {
 
 func setUpJSONResponse(writer http.ResponseWriter) {
 	writer.WriteHeader(http.StatusOK)
-	writer.Header().Set("Accept-Charset", "utf-8")
-	writer.Header().Set("Content-Type", "application/json")
+	writer.Header().Set("Content-Type", "application/json; charset=utf-8")
 }
 
 func declineResponse(writer http.ResponseWriter) {
