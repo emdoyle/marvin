@@ -33,7 +33,7 @@ func addAuthToken(request *http.Request) {
 func POSTToSlack(message *Message) {
 	client := &http.Client{}
 	payload, _ := json.Marshal(message)
-	log.Printf("%s", payload)
+	log.Printf("Posting payload: %s", payload)
 	request, err := http.NewRequest(
 		"POST", SlackChatPostMessageURL, bytes.NewBuffer(payload),
 	)
@@ -72,6 +72,10 @@ func HandleMention(event Event) {
 	message := &Message{
 		Channel: event.Channel,
 		Text:    "Don't bother me.",
+		Blocks: (interface{})([]SectionBlock{
+			BuildBasicSection("Here's a _section_ for you..."),
+		}),
 	}
+	log.Printf("About to post: %v", *message)
 	POSTToSlack(message)
 }
