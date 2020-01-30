@@ -11,11 +11,11 @@ import (
 
 //Message is a message payload
 type Message struct {
-	Channel  string  `json:"channel"`
-	Text     string  `json:"text"`
-	Blocks   []Block `json:"blocks"`
-	ThreadTs string  `json:"thread_ts"`
-	Markdown bool    `json:"mrkdwn"`
+	Channel  string      `json:"channel"`
+	Text     string      `json:"text"`
+	Blocks   interface{} `json:"blocks"`
+	ThreadTs string      `json:"thread_ts"`
+	Markdown bool        `json:"mrkdwn"`
 }
 
 func setJSONResponse(request *http.Request) {
