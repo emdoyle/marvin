@@ -68,11 +68,29 @@ func HandleMessage(event Event) {
 }
 
 func postInteractiveStart(event Event) {
-	log.Printf("start")
+	log.Printf("Posting interactive start")
+	options := []string{"Pizza", "Sushi", "Pasta"}
+
+	blocks := make([]interface{}, 2)
+	blocks[0] = (interface{})(BuildBasicSection("*Pick an option.*"))
+	blocks[1] = (interface{})(BuildBasicActions(options))
+
+	message := &Message{
+		Channel: event.Channel,
+		Text:    "Could not display interactive buttons!",
+		Blocks:  (interface{})(blocks),
+	}
+	POSTToSlack(message)
 }
 
 func postInteractiveStop(event Event) {
-	log.Printf("end")
+	log.Printf("Posting interactive stop")
+
+	message := &Message{
+		Channel: event.Channel,
+		Text:    "Stopping interactivity",
+	}
+	POSTToSlack(message)
 }
 
 func postDefaultMessage(event Event) {

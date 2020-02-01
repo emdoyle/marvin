@@ -11,7 +11,7 @@ type EventWrapper struct {
 	Token       string   `json:"token"`
 	TeamID      string   `json:"team_id"`
 	APIAppID    string   `json:"api_app_id"`
-	Event       Event    `json:"event"`
+	Event       *Event   `json:"event"`
 	AuthedUsers []string `json:"authed_users"`
 	EventID     string   `json:"event_id"`
 	EventTime   int64    `json:"event_time"`
@@ -81,6 +81,6 @@ func EventHandler(w http.ResponseWriter, r *http.Request) {
 	case "url_verification":
 		handleChallenge(eventWrapper, w)
 	case "event_callback":
-		handleEvent(eventWrapper.Event)
+		handleEvent(*eventWrapper.Event)
 	}
 }
