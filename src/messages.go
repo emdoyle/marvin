@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"strings"
 )
 
 //Message is a message payload
@@ -66,16 +67,35 @@ func HandleMessage(event Event) {
 	}
 }
 
-//HandleMention handles an 'app_mention' type Event
-func HandleMention(event Event) {
-	log.Printf("Received mention text: %s", event.Text)
+func postInteractiveStart(event Event) {
+	log.Printf("start")
+}
+
+func postInteractiveStop(event Event) {
+	log.Printf("end")
+}
+
+func postDefaultMessage(event Event) {
 	message := &Message{
 		Channel: event.Channel,
-		Text:    "Don't bother me.",
+		//Text is a fallback when Blocks is passed
+		Text: "Don't bother me.",
 		Blocks: (interface{})([]SectionBlock{
 			BuildBasicSection("Here's a _section_ for you..."),
 		}),
 	}
-	log.Printf("About to post: %v", *message)
 	POSTToSlack(message)
+}
+
+//HandleMention handles an 'app_mention' type Event
+func HandleMention(event Event) {
+	log.Printf("Received mention text: %s", event.Text)
+	switch {
+	case strings.Contains(event.Text, "start"):
+		postInteractiveStart(event)
+	case strings.Contains(event.Text, "stop"):
+		postInteractiveStop(event)
+	default:
+		postDefaultMessage(event)
+	}
 }
