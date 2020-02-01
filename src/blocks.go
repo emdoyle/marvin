@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/google/uuid"
 	"log"
 )
 
@@ -67,6 +68,8 @@ func ButtonsFromOptions(options []string) []Button {
 	for i, option := range options {
 		results[i] = Button{
 			Type: "button",
+			//TODO: Will have to put this in the DB or redis
+			ActionID: uuid.New().String(),
 			Text: &TextObject{
 				Type: "plain_text",
 				Text: option,
