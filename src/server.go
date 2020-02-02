@@ -1,7 +1,9 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
 
@@ -47,4 +49,14 @@ func VerifySlackSignature(rawBody []byte, request *http.Request) bool {
 	timestamp := request.Header.Get(SlackTimestampHeader)
 	slackSignature := []byte(request.Header.Get(SlackSignatureHeader))
 	return VerifySigningSignature(timestamp, rawBody, slackSignature)
+}
+
+//GetRawBody reads the request body and replaces the Body with a new Reader
+func GetRawBody(request *http.Request) ([]byte, error) {
+	rawBody, err := ioutil.ReadAll(request.Body)
+	if err != nil {
+		return []byte{}, err
+	}
+	request.Body = ioutil.NopCloser(bytes.NewBuffer(rawBody))
+	return rawBody, nil
 }
