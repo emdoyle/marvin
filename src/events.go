@@ -34,28 +34,12 @@ type ChallengeResponse struct {
 	Challenge string `json:"challenge"`
 }
 
-func setUpJSONResponse(writer http.ResponseWriter) {
-	writer.WriteHeader(http.StatusOK)
-	writer.Header().Set("Content-Type", "application/json; charset=utf-8")
-}
-
-func declineResponse(writer http.ResponseWriter) {
-	writer.WriteHeader(http.StatusUnauthorized)
-	writer.Write([]byte("denied"))
-}
-
 func handleChallenge(eventWrapper EventWrapper, writer http.ResponseWriter) {
 	response := ChallengeResponse{
 		Challenge: eventWrapper.Challenge,
 	}
-	setUpJSONResponse(writer)
+	SetUpJSONResponse(writer)
 	json.NewEncoder(writer).Encode(response)
-}
-
-func verifySlackSignature(rawBody []byte, request *http.Request) bool {
-	timestamp := request.Header.Get("X-Slack-Request-Timestamp")
-	slackSignature := []byte(request.Header.Get("X-Slack-Signature"))
-	return VerifySigningSignature(timestamp, rawBody, slackSignature)
 }
 
 func handleEvent(event Event) {
@@ -70,8 +54,8 @@ func handleEvent(event Event) {
 //EventHandler handles Slack's events
 func EventHandler(w http.ResponseWriter, r *http.Request) {
 	rawBody, _ := ioutil.ReadAll(r.Body)
-	if verified := verifySlackSignature(rawBody, r); !verified {
-		declineResponse(w)
+	if verified := VerifySlackSignature(rawBody, r); !verified {
+		DeclineResponse(w)
 		return
 	}
 	var eventWrapper EventWrapper
