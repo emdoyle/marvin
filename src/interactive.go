@@ -13,19 +13,42 @@ type UserObject struct {
 	TeamID   string `json:"team_id"`
 }
 
+//InteractionResponse is a JSON response sent to the ResponseURL of an Interaction
+type InteractionResponse struct {
+	Text            string `json:"text,omitempty"`
+	ResponseType    string `json:"response_type,omitempty"`
+	ReplaceOriginal bool   `json:"replace_original,omitempty"`
+	DeleteOriginal  bool   `json:"delete_original,omitempty"`
+}
+
+//ActionObject is a JSON object describing a single action on an app surface
+type ActionObject struct {
+	BlockID  string     `json:"block_id"`
+	ActionID string     `json:"action_id"`
+	ActionTS string     `json:"action_ts,omitempty"`
+	Text     TextObject `json:"text"`
+}
+
 //InteractionPayload is a JSON payload describing a user interaction
 type InteractionPayload struct {
-	Type        string      `json:"type"`
-	TriggerID   string      `json:"trigger_id"`
-	ResponseURL string      `json:"response_url"`
-	User        UserObject  `json:"user"`
-	MessageSrc  interface{} `json:"message,omitempty"`
-	ViewSrc     interface{} `json:"view,omitempty"`
-	Actions     interface{} `json:"actions"`
+	Type        string         `json:"type"`
+	TriggerID   string         `json:"trigger_id"`
+	ResponseURL string         `json:"response_url"`
+	User        UserObject     `json:"user"`
+	MessageSrc  interface{}    `json:"message,omitempty"`
+	ViewSrc     interface{}    `json:"view,omitempty"`
+	Actions     []ActionObject `json:"actions"`
 }
 
 func handleBlockActions(payload InteractionPayload) {
 	log.Printf("Handling block_actions payload")
+	for _, action := range payload.Actions {
+		currResponse := InteractionResponse{
+			Text:            action.Text.Text,
+			ReplaceOriginal: true,
+		}
+		POSTToURL(currResponse, payload.ResponseURL)
+	}
 }
 
 //InteractionHandler handles interaction payloads from Slack
@@ -42,7 +65,7 @@ func InteractionHandler(w http.ResponseWriter, r *http.Request) {
 
 	r.ParseForm()
 	payload, present := r.Form["payload"]
-	if !present {
+	if !present || len(payload) == 0 {
 		log.Printf("Could not find payload in interaction form data!")
 		return
 	}
