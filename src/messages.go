@@ -30,31 +30,49 @@ func addAuthToken(request *http.Request) {
 	)
 }
 
-//POSTToSlack takes a Message and makes an authorized POST request
-func POSTToSlack(message *Message) {
+//POSTToURL takes a JSON-serializable parameter
+//and makes an auth'd POST request to a URL
+func POSTToURL(message interface{}, url string) error {
 	client := &http.Client{}
-	payload, _ := json.Marshal(message)
+	payload, err := json.Marshal(message)
+	if err != nil {
+		log.Printf("Error creating POST request: %s", err)
+		return err
+	}
 	log.Printf("Posting payload: %s", payload)
 	request, err := http.NewRequest(
-		"POST", SlackChatPostMessageURL, bytes.NewBuffer(payload),
+		"POST", url, bytes.NewBuffer(payload),
 	)
 	if err != nil {
 		log.Printf("Error creating POST request: %s", err)
-		return
+		return err
 	}
 	addAuthToken(request)
 	setJSONResponse(request)
 	response, err := client.Do(request)
 	if err != nil {
 		log.Printf("Error sending POST request: %s", err)
+		return err
 	}
-	rawBody, _ := ioutil.ReadAll(response.Body)
+	rawBody, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		log.Printf("Error reading POST response: %s", err)
+		return err
+	}
 	log.Printf(
 		"Response status: %s statusCode: %v body: %s",
 		response.Status,
 		response.StatusCode,
 		string(rawBody),
 	)
+	return nil
+}
+
+//POSTToSlack takes a Message and makes an authorized POST request to
+//the default Slack URL to post chat messages
+func POSTToSlack(message interface{}) error {
+	err := POSTToURL(message, SlackChatPostMessageURL)
+	return err
 }
 
 //HandleMessage handles a 'message' type Event
@@ -75,7 +93,7 @@ func postInteractiveStart(event Event) {
 	blocks[0] = (interface{})(BuildBasicSection("*Pick an option.*"))
 	blocks[1] = (interface{})(BuildBasicActions(options))
 
-	message := &Message{
+	message := Message{
 		Channel: event.Channel,
 		Text:    "Could not display interactive buttons!",
 		Blocks:  (interface{})(blocks),
@@ -86,7 +104,7 @@ func postInteractiveStart(event Event) {
 func postInteractiveStop(event Event) {
 	log.Printf("Posting interactive stop")
 
-	message := &Message{
+	message := Message{
 		Channel: event.Channel,
 		Text:    "Stopping interactivity",
 	}
@@ -94,7 +112,7 @@ func postInteractiveStop(event Event) {
 }
 
 func postDefaultMessage(event Event) {
-	message := &Message{
+	message := Message{
 		Channel: event.Channel,
 		//Text is a fallback when Blocks is passed
 		Text: "Don't bother me.",
