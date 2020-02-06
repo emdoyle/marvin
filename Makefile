@@ -33,3 +33,11 @@ image:
 	make build
 	make tag
 	make push
+
+.PHONY: deploy
+deploy:
+	kubectl delete pod -lapp=marvin
+
+.PHONY: logs
+logs:
+	kubectl logs -f -lapp=marvin
