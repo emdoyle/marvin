@@ -53,26 +53,18 @@ func handleBlockActions(payload InteractionPayload) {
 
 //InteractionHandler handles interaction payloads from Slack
 func InteractionHandler(w http.ResponseWriter, r *http.Request) {
-	rawBody, err := GetRawBody(r)
-	if err != nil {
-		log.Printf("Failed to get body from interaction request")
-		return
-	}
-	if verified := VerifySlackSignature(rawBody, r); !verified {
-		DeclineResponse(w)
-		return
-	}
-
 	r.ParseForm()
 	payload, present := r.Form["payload"]
 	if !present || len(payload) == 0 {
 		log.Printf("Could not find payload in interaction form data!")
+		FailResponse(w)
 		return
 	}
 	var interactionPayload InteractionPayload
 	err = json.Unmarshal(([]byte)(payload[0]), &interactionPayload)
 	if err != nil {
 		log.Printf("Error in unmarshal: %s", err)
+		FailResponse(w)
 		return
 	}
 

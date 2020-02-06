@@ -85,7 +85,7 @@ func HandleMessage(event Event) {
 	}
 }
 
-func postInteractiveStart(event Event) {
+func postInteractiveStart(event Event) error {
 	log.Printf("Posting interactive start")
 	options := []string{"Pizza", "Sushi", "Pasta"}
 
@@ -98,20 +98,20 @@ func postInteractiveStart(event Event) {
 		Text:    "Could not display interactive buttons!",
 		Blocks:  (interface{})(blocks),
 	}
-	POSTToSlack(message)
+	return POSTToSlack(message)
 }
 
-func postInteractiveStop(event Event) {
+func postInteractiveStop(event Event) error {
 	log.Printf("Posting interactive stop")
 
 	message := Message{
 		Channel: event.Channel,
 		Text:    "Stopping interactivity",
 	}
-	POSTToSlack(message)
+	return POSTToSlack(message)
 }
 
-func postDefaultMessage(event Event) {
+func postDefaultMessage(event Event) error {
 	message := Message{
 		Channel: event.Channel,
 		//Text is a fallback when Blocks is passed
@@ -120,7 +120,7 @@ func postDefaultMessage(event Event) {
 			BuildBasicSection("Here's a _section_ for you..."),
 		}),
 	}
-	POSTToSlack(message)
+	return POSTToSlack(message)
 }
 
 //HandleMention handles an 'app_mention' type Event

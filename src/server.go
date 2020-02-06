@@ -26,8 +26,8 @@ func main() {
 
 	staticFileServer := http.FileServer(http.Dir(GetEnv("STATIC_DIR", "assets/build/")))
 	http.Handle("/", staticFileServer)
-	http.HandleFunc("/events", EventHandler)
-	http.HandleFunc("/interactive", InteractionHandler)
+	http.Handle("/events", WithSlackSignatureVerificationHandler(EventHandler))
+	http.Handle("/interactive", WithSlackSignatureVerificationHandler(InteractionHandler))
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", GetEnv("MARVIN_PORT", "8080")), nil))
 }
 
@@ -41,6 +41,14 @@ func SetUpJSONResponse(writer http.ResponseWriter) {
 func DeclineResponse(writer http.ResponseWriter) {
 	writer.WriteHeader(http.StatusUnauthorized)
 	writer.Write([]byte("denied"))
+	log.Printf("Denied request")
+}
+
+//FailResponse sends a 500 response using a ResponseWriter
+func FailResponse(writer http.ResponseWriter) {
+	writer.WriteHeader(http.StatusInternalServerError)
+	writer.Write([]byte("error"))
+	log.Printf("Failed request")
 }
 
 //VerifySlackSignature takes an http Request and verifies that it was
@@ -59,4 +67,22 @@ func GetRawBody(request *http.Request) ([]byte, error) {
 	}
 	request.Body = ioutil.NopCloser(bytes.NewBuffer(rawBody))
 	return rawBody, nil
+}
+
+//WithSlackSignatureVerificationHandler decorates a HandlerFunc with logic to
+//verify the request came from Slack
+func WithSlackSignatureVerificationHandler(handler func(http.ResponseWriter, *http.Request)) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		rawBody, err := GetRawBody(r)
+		if err != nil {
+			log.Printf("Failed to get body from incoming request")
+			FailResponse(w)
+			return
+		}
+		if verified := VerifySlackSignature(rawBody, r); !verified {
+			DeclineResponse(w)
+			return
+		}
+		handler(w, r)
+	})
 }

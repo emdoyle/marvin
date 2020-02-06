@@ -53,9 +53,9 @@ func handleEvent(event Event) {
 
 //EventHandler handles Slack's events
 func EventHandler(w http.ResponseWriter, r *http.Request) {
-	rawBody, _ := ioutil.ReadAll(r.Body)
-	if verified := VerifySlackSignature(rawBody, r); !verified {
-		DeclineResponse(w)
+	rawBody, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		FailResponse(w)
 		return
 	}
 	var eventWrapper EventWrapper
